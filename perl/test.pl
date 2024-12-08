@@ -99,27 +99,16 @@ sub do_msg {
 
         $lines = $curbuf->Count();
 
-        if ($collect_messages =~ m/\n/) {
-            @splits = split /\n/, $collect_messages;
+        $curbuf->Set($lines, $collect_messages);
 
-            for $i (0 .. $#splits) {
-                if ($i == 0) {
-                    $curbuf->Set($lines, $splits[$i]);
-                }
-                else {
-                    $curbuf->Append($lines, $splits[$i]);
-                    $lines++;
-                    $collect_messages = $splits[$i];
-                }
-            }
-        }
-        else {
-            $curbuf->Set($lines, $collect_messages);
-        }
+        VIM::DoCommand('silent! %s/\%x00/\r/g');
+        $lines = $curbuf->Count();
+        $collect_messages = $curbuf->Get($lines);
     }
 }
 
 __END__
+
 
 =pod
 
