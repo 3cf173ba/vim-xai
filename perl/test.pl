@@ -114,29 +114,21 @@ __END__
 
 =head1 NAME
 
-xai_complete.pl - A script to interact with an AI completion service from within Vim
+xai_complete - A Perl script for interacting with an AI completion service
 
 =head1 SYNOPSIS
 
-    perl xai_complete.pl
+    use LWP::UserAgent;
+    use HTTP::Request;
+    use JSON;
+    use utf8;
+    use open ':std', ':encoding(UTF-8)';
+
+    main();
 
 =head1 DESCRIPTION
 
-This script is designed to be used within Vim to send text selections to an external AI service for completion or processing. It uses HTTP requests to communicate with the service, handles streaming responses, and updates the Vim buffer with the received content.
-
-=head1 PREREQUISITES
-
-=over 4
-
-=item * LWP::UserAgent
-
-=item * HTTP::Request
-
-=item * JSON
-
-=item * utf8
-
-=back
+This script is designed to interact with an AI completion service, likely for use within a Vim plugin or similar text editor environment. It sends a request to an AI service with user-defined parameters and processes the streaming response to update the Vim buffer in real-time.
 
 =head1 FUNCTIONS
 
@@ -150,90 +142,94 @@ The main function orchestrates the script's operation:
 
 =item * Evaluates Vim variables for configuration.
 
-=item * Prepares the JSON payload for the API request.
+=item * Prepares and sends an HTTP POST request to the AI service.
 
-=item * Sends a POST request to the AI service.
-
-=item * Handles the response, either streaming or immediate.
+=item * Handles the response, either streaming or non-streaming, and updates the Vim buffer accordingly.
 
 =back
 
 =item B<do_msg($chunk)>
 
-Handles streaming data from the API:
+Processes chunks of the streaming response:
 
 =over 4
 
-=item * Collects chunks of data into a buffer.
+=item * Accumulates chunks until a complete message is received.
 
-=item * Processes complete messages from the buffer.
+=item * Decodes JSON from the message chunks.
 
-=item * Updates the Vim buffer with new content from the AI.
+=item * Updates the Vim buffer with the AI's response content.
+
+=item * Ensures immediate output by setting autoflush.
 
 =back
 
 =back
 
-=head2 Configuration Variables
-
-The script uses several Vim variables for configuration:
+=head1 VARIABLES
 
 =over 4
 
-=item * C<g:vim_xai_complete_default_url> - URL for the AI service.
+=item C<$chunk_buffer>
 
-=item * C<g:vim_xai_complete_default> - Default JSON payload for the request.
+Stores incomplete chunks of the streaming response.
 
-=item * C<g:vim_xai_token> - Authentication token for the API.
+=item C<$collect_messages>
 
-=item * C<g:vim_xai_user_agent> - User agent string for HTTP requests.
+Accumulates the content of the AI's response for display.
 
-=item * C<s:vim_xai_args> - Additional arguments for the AI request.
+=item C<@evals>
 
-=item * C<l:selection> - The text selection from Vim to be processed.
+An array of Vim variables to evaluate for configuration.
+
+=item C<$xai_xd_obj>
+
+A JSON object representing the request to the AI service.
+
+=item C<$json_string>
+
+The JSON encoded string of the request object.
+
+=item C<$headers>
+
+HTTP headers for the request, including authentication.
+
+=item C<$ua>
+
+An instance of LWP::UserAgent for making HTTP requests.
+
+=item C<$req>
+
+The HTTP request object.
+
+=item C<$response>
+
+The HTTP response object from the AI service.
 
 =back
 
-=head2 HTTP Request Setup
+=head1 DEPENDENCIES
 
 =over 4
 
-=item * Uses LWP::UserAgent for making HTTP requests.
+=item * LWP::UserAgent
 
-=item * Sets up headers including Content-Type and Authorization.
+=item * HTTP::Request
 
-=item * Configures SSL options to bypass hostname verification.
+=item * JSON
 
-=back
+=item * utf8
 
-=head2 Response Handling
-
-=over 4
-
-=item * If the response is successful, it prints a success message and processes the content.
-
-=item * If there's an error, it prints the status line of the failed request.
-
-=back
-
-=head1 NOTES
-
-=over 4
-
-=item * The script assumes UTF-8 encoding for all text operations.
-
-=item * Streaming responses are handled by appending to the Vim buffer in real-time.
-
-=item * Error handling is minimal; the script dies on failure to evaluate Vim variables.
+=item * open
 
 =back
 
 =head1 AUTHOR
 
-Albert J. Mendes
+Albert J. Mendes <tray.mendes@gmail.com>
 
 =head1 SEE ALSO
 
-L<Vim>, L<LWP::UserAgent>, L<HTTP::Request>, L<JSON>
+L<Vim>, L<Perl>, L<JSON>, L<LWP::UserAgent>
 
 =cut
