@@ -11,7 +11,7 @@ let g:vim_xai_complete_default = '{
 \       "content": "You are Grok, a chatbot inspired by the Hitchhikers Guide to the Galaxy."
 \     }
 \  ],
-\  "model": "grok-2-1212",
+\  "model": "grok-2-latest",
 \  "stream": 1,
 \  "temperature": 0
 \}'
